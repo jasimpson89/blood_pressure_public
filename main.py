@@ -3,34 +3,39 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import requests
 from datetime import datetime
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output
+import plotly.express as px
 
 
-def main():
-    # Read data from xlxs
-    xlsx_file = "/Users/jsimpson/OneDrive/blood_pressure/bp_v_weight_v2.xlsx"
-    dfs = pd.read_excel(xlsx_file, sheet_name="new data")
-    fig = plot(dfs)
-    fig.write_html('first_figure.html', auto_open=True)
+#initiating the app
+app = dash.Dash()
+xlsx_file = "/Users/jsimpson/OneDrive/blood_pressure/bp_v_weight_v2.xlsx"
+df = pd.read_excel(xlsx_file, sheet_name="new data")
+#defining the layout
+app.layout = html.Div([
+                html.Div([
+                    dcc.Graph(id='mpg-scatter',
+                              figure={
+                                  'data':[go.Scatter(
+                                      x=df['date'],
+                                      y=[df['bp1']],
+                                      # text=df['name'],
+                                      mode='markers'
+                                  )],
+                                  'layout':go.Layout(
+                                      title='MPG vs Model Year',
+                                      xaxis={'title':'Model Year'},
+                                      yaxis={'title':'MPG'},
+                                      hovermode='closest'
+                                   )}
+                    )
+                ],style={'width':'50%','display':'inline-block'}),
 
 
-def plot(df):
-    fig = make_subplots(
-        rows=2,cols=1
-
-    )
-    fig.add_trace(
-        go.Scatter(x=df["date"].tolist(),y=df["bp1"].tolist(),marker='*',line=None),
-        row=1,col=1
-    )
-    fig.add_trace(
-        go.Scatter(x=df["date"].tolist(), y=df["bp2"].tolist()),
-        row=1, col=1
-    )
-
-    fig.add_trace(
-        go.Scatter(x=df["date"].tolist(),y=df["fat mass"].tolist()),
-        row=2,col=1
-    )
-
-    return fig
-main()
+])
+#running the app
+if __name__ == '__main__':
+    app.run_server()
