@@ -7,6 +7,7 @@ from dash.dependencies import Input, Output
 
 #initiating the app
 app = dash.Dash()
+server = app.server
 
 xlsx_file = "/Users/jsimpson/OneDrive/blood_pressure/bp_v_weight_v2.xlsx"
 df = pd.read_excel(xlsx_file, sheet_name="new data")
@@ -33,8 +34,5 @@ app.layout = html.Div([
 ])
 if __name__ == '__main__':
 
-    production = True
-    if production:
-        server = app.server
-    else:
-        app.run_server()
+
+    app.run_server()
