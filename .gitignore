@@ -1,2 +1,5 @@
 .gitignore
 .idea/
+*.pyc
+.DS_Store
+.env
