@@ -4,13 +4,19 @@ import dash_html_components as html
 import plotly.graph_objs as go
 import pandas as pd
 from dash.dependencies import Input, Output
-
+import urllib.request
 #initiating the app
 app = dash.Dash()
 server = app.server
 
-xlsx_file = "/Users/jsimpson/OneDrive/blood_pressure/bp_v_weight_v2.xlsx"
-df = pd.read_excel(xlsx_file, sheet_name="new data")
+url_onedrive = "https://onedrive.live.com/download.aspx?resid=76BCA2A8519465B9!64241&ithint=file%2cxlsx&authkey=!AL2olPlMJ4XfQqQ"
+
+# urllib.request.urlretrieve(url_onedrive, "test.xlsx")
+
+# xlsx_file = "/Users/jsimpson/OneDrive/blood_pressure/bp_v_weight_v2.xlsx"
+
+
+df = pd.read_excel( "./bp_v_weight_v2.xlsx", sheet_name="new data")
 
 
 app.layout = html.Div([
