@@ -32,4 +32,9 @@ app.layout = html.Div([
                 ],style={'width':'50%','display':'inline-block'}),
 ])
 if __name__ == '__main__':
-    app.run_server()
+
+    production = True
+    if production:
+        server = app.server
+    else:
+        app.run_server()
