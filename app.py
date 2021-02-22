@@ -10,7 +10,7 @@ import pandas as pd
 app = dash.Dash()
 
 server = app.server
-url="https://github.com/jasimpson89/blood_pressure/blob/master/bp_v_weight_v2.csv"
+url="https://raw.githubusercontent.com/jasimpson89/blood_pressure/master/bp_v_weight_v2.csv?token=AO6O4MQ57R3ZZQN764HIFPTAGL7LI"
 df = df = pd.read_csv(url,sep=",")
 app.layout = html.Div([
     html.Div([
