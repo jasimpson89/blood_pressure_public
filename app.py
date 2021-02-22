@@ -10,7 +10,8 @@ import pandas as pd
 app = dash.Dash()
 
 server = app.server
-df = pd.read_excel( "./bp_v_weight_v2.xlsx", sheet_name="new data")
+url="https://github.com/jasimpson89/blood_pressure/blob/master/bp_v_weight_v2.csv"
+df = df = pd.read_csv(url,sep=",")
 app.layout = html.Div([
     html.Div([
         dcc.Graph(id='mpg-scatter',
