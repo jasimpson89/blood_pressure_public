@@ -7,34 +7,45 @@ import plotly.graph_objs as go
 import pandas as pd
 import plotly.express as px
 
-
+# https://www.ahajournals.org/doi/epub/10.1161/01.HYP.0000094221.86888.AE ANALYSIS
 app = dash.Dash()
 
 server = app.server
 df = pd.read_csv("./bp_v_weight_v2.csv",sep=",")
-
-fig_date = px.scatter(df, x="date", y=["bp1","bp2"],hover_data= ["weight (kg)"])
-fig_date.update_layout(title="blood pressure over time",xaxis_title="date",yaxis_title="Blood pressure (mmHG)",
+# convert the date to date time object in pandas
+df['date'] = pd.to_datetime(df['date'], format='%d/%m/%Y')
+print(df.dtypes)
+fig_date = px.scatter(df, x="date", y=["systolic","diastolic"],hover_data= ["weight (kg)","comments"])
+fig_date.update_layout({'xaxis':{'tickformat': '%d/%m'}},title="BP over time",xaxis_title="date",yaxis_title="Blood pressure (mmHG)",
                        hovermode="x unified")
 
-fig_weight = px.scatter(df, x="weight (kg)", y=["bp1","bp2"])
-fig_weight.update_layout(title="blood pressure versus total weight",xaxis_title="weight (kg)",yaxis_title="Blood pressure (mmHG)")
 
-fig_fat_mass = px.scatter(df, x="fat mass", y=["bp1","bp2"])
-fig_fat_mass.update_layout(title="blood pressure versus fat mass",xaxis_title="fat mass (kg)",yaxis_title="Blood pressure (mmHG)")
+fig_weight = px.scatter(df, x="weight (kg)", y=["systolic","diastolic"])
+fig_weight.update_layout(title="BP v. total weight",xaxis_title="weight (kg)",yaxis_title="Blood pressure (mmHG)")
 
+fig_fat_mass = px.scatter(df, x="fat mass", y=["systolic","diastolic"])
+fig_fat_mass.update_layout(title="BP v. fat mass",xaxis_title="fat mass (kg)",yaxis_title="Blood pressure (mmHG)")
+
+fig_muscle_mass = px.scatter(df, x="muscle mass", y=["systolic","diastolic"])
+fig_muscle_mass.update_layout(title="BP v. fat mass",xaxis_title="fat mass (kg)",yaxis_title="Blood pressure (mmHG)")
 
 app.layout = html.Div([
     html.Div([
-        dcc.Graph(id='bp1-scatter',
-                  figure=fig_date
-                  )
-                ], style={'width': '50%', 'display': 'inline-block'}),
+        dcc.Graph(figure={
+            'data': [{
+                'x': df['date'].tolist(),
+                'y': df['systolic'].tolist()
+            }],
+            'layout': {
+                'xaxis': {
+                    'tickformat': '%d/%m'
+                }
+            }})]),
     html.Div([
         dcc.Graph(id='bp-weight-scatter',
                   figure=fig_weight
                   )
-                ], style={'width': '50%', 'display': 'inline-block'}),
+                ], style={'width': '100%', 'display': 'inline-block'}),
     html.Div([
         dcc.Graph(id='bp-fat-weight-scatter',
                   figure=fig_fat_mass
