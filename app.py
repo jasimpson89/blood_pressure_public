@@ -13,32 +13,24 @@ app = dash.Dash()
 server = app.server
 df = pd.read_csv("./bp_v_weight_v2.csv",sep=",")
 
-fig = px.scatter(df, x="date", y=["bp1","bp2"])
+fig_date = px.scatter(df, x="date", y=["bp1","bp2"])
+fig_date.update_layout(title="blood pressure over time",xaxis_title="date",yaxis_title="Blood pressure (mmHG)")
+
+fig_weight = px.scatter(df, x="weight (kg)", y=["bp1","bp2"])
+fig_weight.update_layout(title="blood pressure versus total weight",xaxis_title="weight (kg)",yaxis_title="Blood pressure (mmHG)")
 
 
 app.layout = html.Div([
     html.Div([
         dcc.Graph(id='bp1-scatter',
-                  figure=fig
+                  figure=fig_date
                   )
-    ], style={'width': '50%', 'display': 'inline-block'}),
+                ], style={'width': '50%', 'display': 'inline-block'}),
     html.Div([
-            dcc.Graph(id='bp2-scatter',
-                      figure={
-                          'data': [go.Scatter(
-                              x=df["date"],
-                              y=df["bp2"],
-
-                              mode='markers'
-                          )],
-                          'layout': go.Layout(
-                              title='Bp2 over time',
-                              xaxis={'title': 'Date'},
-                              yaxis={'title': 'Blood pressure (mmHg)'},
-                              hovermode='closest'
-                          )}
-                      )
-        ], style={'width': '50%', 'display': 'inline-block'}),
+        dcc.Graph(id='bp-weight-scatter',
+                  figure=fig_weight
+                  )
+                ], style={'width': '50%', 'display': 'inline-block'}),
 
 ])
 
