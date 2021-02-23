@@ -8,6 +8,7 @@ import plotly.graph_objs as go
 import pandas as pd
 import plotly.express as px
 import datetime as dt
+
 # https://www.ahajournals.org/doi/epub/10.1161/01.HYP.0000094221.86888.AE ANALYSIS
 # Dash requirements
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
@@ -52,7 +53,32 @@ fig_fat_percentage.update_layout(title="BP v. fat percentage",xaxis_title="fat p
 
 
 ## TABS 2 - analysis
-df.groupby
+# this bins the weight in the bins shown. then takes the mean, so we between the bin we can see the average values
+bin_size = int(df["weight (kg)"].max() - df["weight (kg)"].min())
+binned,bin_labels = pd.cut(df['weight (kg)'], bin_size,retbins=True)
+# Make xtick labels for plot
+xtick_bin = []
+for i in range(len(bin_labels)-1):
+    lower = round(bin_labels[i],2)
+    upper = round(bin_labels[i+1],2)
+    xtick_bin.append(str(lower)+"-"+str(upper))
+
+df_binned_weight = df.groupby(binned).mean()
+
+fig_binned_weigth = px.scatter(df_binned_weight,x="weight (kg)",y=["systolic","diastolic"],template="plotly_dark")
+fig_binned_weigth.update_layout(xaxis_title="Total weight binned in 1KG (kg)",yaxis_title="Blood pressure (mmHG)",
+                                    xaxis = dict(
+                                            tickmode = 'array',
+                                            tickvals = df_binned_weight["weight (kg)"],
+                                            ticktext = xtick_bin
+                                        )
+                                )
+# MAKE WITH FAT BINNING
+fig_binned_fat_weigth = px.scatter(df_binned_weight,x="fat mass",y=["systolic","diastolic"],template="plotly_dark")
+fig_binned_fat_weigth.update_layout(xaxis_title="Average fat mass in bin",yaxis_title="Blood pressure (mmHG)")
+
+fig_binned_muscle_weigth = px.scatter(df_binned_weight,x="muscle mass",y=["systolic","diastolic"],template="plotly_dark")
+fig_binned_muscle_weigth.update_layout(xaxis_title="Average muscle mass in bin",yaxis_title="Blood pressure (mmHG)")
 
 
 app.layout = html.Div([
@@ -106,30 +132,28 @@ app.layout = html.Div([
                             ]),
 
                         ]),
+
+
+                    dbc.Tab(label='Analysis of data', children=[
+                            dbc.Card([
+                                dbc.CardBody([
+                                    html.H6("The systolic pressure appears to get close to 120 but rarely exact, accuracy of the machine?"),
+                                    dbc.Row(
+                                        [
+                                            dbc.Col(dcc.Graph(id='bp-bin-weight', figure=fig_binned_weigth)),
+                                            dbc.Col(dcc.Graph(id='bp-bin-fat-weight', figure=fig_binned_fat_weigth)),
+                                            dbc.Col(dcc.Graph(id='bp-bin-muscle-weight', figure=fig_binned_muscle_weigth)),
+                                        ]
+                                    ),
+                                ]),
+                            ]),
+
+                        ]),
+                    dbc.Tab(label='Exercise', children=[]),
                     dbc.Tab(label='Data table', children=[
+                       # Note the dash table is much better but much fiddilier to use
                         dbc.Table.from_dataframe(df_date_strip, striped=True, bordered=True, hover=True)
-                        # dash_table.DataTable(
-                        #     id='table',
-                        #     style_cell = {'whiteSpace': 'normal','height': 'auto'},
-                        #     columns=[{"name": i, "id": i} for i in df.columns],
-                        #     data=df.to_dict('records'),
-                        #     style_data_conditional=[
-                        #         {
-                        #             'if': {
-                        #                 'column_id': 'systolic',
-                        #             },
-                        #             'backgroundColor': 'dodgerblue',
-                        #             'color': 'white'
-                        #         },
-                        #         {
-                        #             'if': {
-                        #                 'column_id': 'diastolic',
-                        #             },
-                        #             'backgroundColor': 'red',
-                        #             'color': 'white'
-                        #         },
-                        #     ]
-                        # )
+
                     ])
                 ])
             ])
