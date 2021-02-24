@@ -126,16 +126,15 @@ fig_avg_bp_exercise_color_weight = px.scatter(df_avg_exercise,x="monthly average
 fig_avg_bp_exercise_color_weight.update_layout(xaxis_title="Monthly exerise (hours)",yaxis_title="BP (mmHG) average of that month",font=font_dict)
 fig_avg_bp_exercise_color_weight=make_hlines(fig_avg_bp_exercise_color_weight)
 
+# Tab 4 - heart rate
+fig_HR = px.scatter(df,x="heart rate",y=["systolic","diastolic"],color="weight (kg)",template=template_plotly)
+fig_HR.update_layout(xaxis_title="Heart rate (bpm)",yaxis_title="BP (mmHG)",font=font_dict)
+fig_HR=make_hlines(fig_HR)
 
-app.layout = html.Div([
-                html.Br(),
-                dbc.Row(dbc.Col( html.Div(children=[html.H1(children='Blood pressure analysis')],style={'textAlign': 'center'}))),
-                html.Br(),
-                html.Br(),
-                # dbc.Row(dbc.Col(html.H4("Data over the past year. Conclusion - corelates mostly with weight"))),
-                # dbc.Row(dbc.Col(html.H6("Tab 1 - Raw data plots, Tab 2 - plots of some (useful?) analysis, Tab 3 - raw in table form"))),
 
-                dbc.Tabs([
+
+
+tabs = dbc.Tabs([
                     dbc.Tab(label='Raw data', children=[
                         html.Br(),
                         dbc.Card([
@@ -205,6 +204,10 @@ app.layout = html.Div([
                                         [
                                             dbc.Col(drawFigure(dcc.Graph(id='bp-weight-scatter')), width=8),
                                             dbc.Col([
+                                                html.Br(),
+                                                html.Br(),
+                                                html.Br(),
+
                                                 html.H6('Please use slider below to select total weight range'),
                                                 dcc.RangeSlider(
                                                     id='range-slider',
@@ -248,8 +251,6 @@ app.layout = html.Div([
                             ]),
                         ], color="dark"),
                     ]),
-
-
                     dbc.Tab(label='Analysis of data', children=[
 
                         dbc.Card([
@@ -309,29 +310,148 @@ app.layout = html.Div([
                     dbc.Tab(label='Exercise', children=[
                         dbc.Card([
                             dbc.CardBody([
-                                html.H5("Average exercise per month, shown with average blood pressure for that month"),
+                                dbc.Card(
+                                    dbc.CardBody([
+                                        dbc.Row([
+                                            dbc.Col([
+                                                drawText("Average exercise per month plotted with averge systolic and diasotic for that month"),
+                                                dcc.Markdown('''The colors show the month is labelled or the average weight in that month''')
+                                            ]),
+                                        ])
+                                    ]),
+                                ),
+                                html.Br(),
                                 dbc.Row(
                                     [
-                                        dbc.Col(dcc.Graph(id='bp-exercise-avg-bp', figure=fig_avg_bp_exercise),width=6),
-                                        dbc.Col(dcc.Graph(id='bp-exercise-avg-bp-color-weight', figure=fig_avg_bp_exercise_color_weight),width=6),
+                                        dbc.Col(drawFigure(dcc.Graph(id='bp-exercise-avg-bp', figure=fig_avg_bp_exercise)),width=6),
+                                        dbc.Col(drawFigure(dcc.Graph(id='bp-exercise-avg-bp-color-weight', figure=fig_avg_bp_exercise_color_weight)),width=6),
 
                                     ]
                                 ),
                             ]),
                         ])
                     ]),
-                    dbc.Tab(label='Data table ordered by date', children=[
-                       # Note the dash table is much better but much fiddilier to use
-                        dbc.Table.from_dataframe(df_date_strip, striped=True, bordered=True, hover=True)
+                    dbc.Tab(label='Heart rate depedence', children=[
+                        dbc.Card([
+                            dbc.CardBody([
+                                dbc.Card(
+                                    dbc.CardBody([
+                                        dbc.Row([
+                                            dbc.Col([
+                                                drawText("HR as measured by BP cuff"),
+                                                dcc.Markdown('''
+                                                # Some notes
+                                                - Lower HR seeminly appears more at higher weights
+                                                - Lower weights tend to mean more exercise, so post exercise HR maybe elevated. Need more research.
+                                                - Perhaps a histogram here?''')
+                                            ]),
+                                        ])
+                                    ]),
+                                ),
+                                html.Br(),
+                                dbc.Row(
+                                    [
+                                        dbc.Col(drawFigure(dcc.Graph(id='bp-HR', figure=fig_HR)),width=12),
 
+
+                                    ]
+                                ),
+                            ]),
+                        ])
                     ]),
-                    dbc.Tab(label='Data table ordered by weight', children=[
-                       # Note the dash table is much better but much fiddilier to use
-                        dbc.Table.from_dataframe(df_date_strip.sort_values(by='weight (kg)'), striped=True, bordered=True, hover=True)
+                    dbc.Tab(label='Data table', children=[
 
-                    ])
+                        dbc.Card([
+                            dbc.CardBody([
+                                dbc.Card(
+                                    dbc.CardBody([
+                                        dbc.Row([
+                                            dbc.Col([
+                                                drawText("Collected Data"),
+                                                dcc.Markdown('''
+                                                - The columns can be ordered in ascending and descending fashion by the small arrows
+                                                ''')
+                                            ]),
+                                        ])
+                                    ]),
+                                ),
+                                html.Br(),
+                                dbc.Card([
+                                    dbc.CardBody([
+
+                                dbc.Row(
+                                        dbc.Col(
+                                            dash_table.DataTable(
+                                            id='table',
+                                            # fixed_rows={'headers': True, 'data': 0},
+                                            # style_cell={
+                                            #     'whiteSpace': 'normal',
+                                            #     'height': 'auto',
+                                            #     'lineHeight': '15px'
+                                            # },
+                                            style_header=
+                                            {
+                                            "fontWeight": "bold",
+                                            "border": "thin lightgrey solid",
+                                            "backgroundColor": "rgb(30, 30, 30)",
+                                            "color": "white"
+                                            },
+                                            style_cell={
+                                            "fontFamily": "Arial",
+                                            "textAlign": "left",
+                                            "width": "60px",
+                                            "minWidth": "60px",
+                                            "maxWidth": "150px",
+                                            "whiteSpace": "normal",
+                                            "height": "auto",
+                                            # "overflow": "hidden",
+                                            # "textOverflow": "ellipsis",
+                                            "backgroundColor": "Rgb(50,50,50)",
+                                            "color": "white"
+                                            },
+                                            style_data_conditional=[
+                                            {
+                                            "if": {"row_index": "odd"},
+                                            "backgroundColor": "rgb(70, 70, 70)",
+                                            "color": "white",
+                                            },
+
+                                            ],
+
+                                            fixed_rows={"headers": True, "data": 0},
+
+
+                                            columns=[{"name": i, "id": i} for i in df_date_strip.columns],
+                                            data=df_date_strip.to_dict('records'),
+
+                                            # filter_action="native",
+                                            sort_action="native",
+                                            sort_mode="multi",
+                                            )
+                                        )
+                                        ),
+                                    ]),
+                                ]),
+                            ]),
+                        ])
+
+                ]),
+                ],
+
+              )
+
+
+
+
+app.layout = html.Div([
+                html.Br(),
+                dbc.Row(dbc.Col( html.Div(children=[html.H1(children='Blood pressure analysis')],style={'textAlign': 'center'}))),
+                html.Br(),
+                html.Br(),
+                tabs
                 ])
-            ])
+
+
 
 # Call back for plot 1 of date select date range
 @app.callback(
