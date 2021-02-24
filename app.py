@@ -55,6 +55,16 @@ def drawText(text_title):
             ])
         ),
     ])
+def drawMarkdown(text_title):
+    return html.Div([
+        dbc.Card(
+            dbc.CardBody([
+                html.Div([
+                    html.H2(text_title),
+                ], style={'textAlign': 'center'})
+            ])
+        ),
+    ])
 # Figures
 template_plotly = "plotly_dark"
 ## TAB 1 - raw date plots
@@ -114,12 +124,16 @@ fig_avg_bp_exercise_color_weight=make_hlines(fig_avg_bp_exercise_color_weight)
 
 
 app.layout = html.Div([
-                dbc.Row(dbc.Col( html.Div(children=[html.H1(children='Blood pressure analysis')]))),
+                html.Br(),
+                dbc.Row(dbc.Col( html.Div(children=[html.H1(children='Blood pressure analysis')],style={'textAlign': 'center'}))),
+                html.Br(),
+                html.Br(),
                 # dbc.Row(dbc.Col(html.H4("Data over the past year. Conclusion - corelates mostly with weight"))),
                 # dbc.Row(dbc.Col(html.H6("Tab 1 - Raw data plots, Tab 2 - plots of some (useful?) analysis, Tab 3 - raw in table form"))),
 
                 dbc.Tabs([
                     dbc.Tab(label='Raw data', children=[
+                        html.Br(),
                         dbc.Card([
                             dbc.CardBody([
                                     dbc.Card(
@@ -226,29 +240,59 @@ app.layout = html.Div([
 
 
                     dbc.Tab(label='Analysis of data', children=[
+
                         dbc.Card([
                             dbc.CardBody([
-                                html.H5("The systolic pressure appears to get close to 120 but rarely exact, accuracy of the machine?"),
+                                dbc.Card(
+                                    dbc.CardBody([
+                                        dbc.Row([
+                                            dbc.Col([
+                                                drawText("Binned weight versus average BP at that weight"),
+                                                html.Br(),
+                                                dcc.Markdown('''
+                                                ### Analysis method
+                                                - FIRSTLY THIS IS ALL VERY HAND WAVEY! and based only on one sample
+                                                - Bin the weight data in approx. 1kg bin
+                                                - For that bin range, calculate the average systolic and diastolic pressure
+                                                
+                                                ### Findings
+                                                - Systolic pressure gets close to 120 as weight decreases, but is it close enough? How accurate are the machines?
+                                                - Diastolic appears to move towards optimum as weight decreases
+                                                - Below their appears to be a scaling with fat mass when binned 
+                                                ''')
+                                            ]),
+
+                                        ])
+                                    ])
+                                ),
+                                html.Br(),
                                 dbc.Row(
                                     [
-                                        dbc.Col(dcc.Graph(id='bp-bin-weight', figure=fig_binned_weigth)),
+                                        dbc.Col(drawFigure(dcc.Graph(id='bp-bin-weight', figure=fig_binned_weigth))),
                                     ]
                                 )
 
                             ]),
                         ]),
-                        dbc.Card([
+                        html.Br(),
+                        dbc.Card(
                             dbc.CardBody([
-                                html.H5("There appears to be some scaling with binned fat mass"),
-                                dbc.Row(
+                                dbc.Row([
+                                    dbc.Col([
+                                        drawText("Some scaling seen with binned fat mass"),
+                                    ])
+                                ])
+                            ]),
+                        ),
+                        html.Br(),
+                            dbc.Row(
                                     [
 
-                                        dbc.Col(dcc.Graph(id='bp-bin-fat-weight', figure=fig_binned_fat_weigth),width=6),
-                                        dbc.Col(dcc.Graph(id='bp-bin-muscle-weight', figure=fig_binned_muscle_weigth),width=6),
+                                        dbc.Col(drawFigure(dcc.Graph(id='bp-bin-fat-weight', figure=fig_binned_fat_weigth)),width=6),
+                                        dbc.Col(drawFigure(dcc.Graph(id='bp-bin-muscle-weight', figure=fig_binned_muscle_weigth)),width=6),
                                     ]
                                 ),
-                            ]),
-                        ]),
+
                     ]),
                     dbc.Tab(label='Exercise', children=[
                         dbc.Card([
