@@ -68,19 +68,23 @@ def drawMarkdown(text_title):
 # Figures
 template_plotly = "plotly_dark"
 ## TAB 1 - raw date plots
-
+font_dict=dict(
+        family="Arial",
+        size=18,
+        color="#7f7f7f"
+    )
 fig_fat_mass = px.scatter(df, x="fat mass", y=["systolic","diastolic"],template=template_plotly)
-fig_fat_mass.update_layout(title="BP v. fat mass",xaxis_title="fat mass (kg)",yaxis_title="Blood pressure (mmHG)")
+fig_fat_mass.update_layout(title="BP v. fat mass",xaxis_title="fat mass (kg)",yaxis_title="Blood pressure (mmHG)",font=font_dict)
 fig_fat_mass=make_hlines(fig_fat_mass)
 
 fig_muscle_mass = px.scatter(df, x="muscle mass", y=["systolic","diastolic"],template=template_plotly)
-fig_muscle_mass.update_layout(title="BP v. muscle mass",xaxis_title="muscle mass (kg)",yaxis_title="Blood pressure (mmHG)")
+fig_muscle_mass.update_layout(title="BP v. muscle mass",xaxis_title="muscle mass (kg)",yaxis_title="Blood pressure (mmHG)",font=font_dict)
 fig_muscle_mass=make_hlines(fig_muscle_mass)
 
 fat_percentage = (df["fat mass"]/df["weight (kg)"])*100
 df["fat_percentage"] = fat_percentage
 fig_fat_percentage = px.scatter(df, x="fat_percentage", y=["systolic","diastolic"],template=template_plotly)
-fig_fat_percentage.update_layout(title="BP v. fat percentage",xaxis_title="fat percentage (%)",yaxis_title="Blood pressure (mmHG)")
+fig_fat_percentage.update_layout(title="BP v. fat percentage",xaxis_title="fat percentage (%)",yaxis_title="Blood pressure (mmHG)",font=font_dict)
 fig_fat_percentage=make_hlines(fig_fat_percentage)
 
 
@@ -88,7 +92,7 @@ fig_fat_percentage=make_hlines(fig_fat_percentage)
 df_binned_weight, xtick_bin = process_bins.process_bins(df,'weight (kg)')
 
 fig_binned_weigth = px.scatter(df_binned_weight,x="weight (kg)",y=["systolic","diastolic"],template=template_plotly)
-fig_binned_weigth.update_layout(xaxis_title="Total weight binned in 1KG (kg)",yaxis_title="Blood pressure (mmHG)",
+fig_binned_weigth.update_layout(font=font_dict,xaxis_title="Total weight binned in 1KG (kg)",yaxis_title="Blood pressure (mmHG)",
                                     xaxis = dict(
                                             tickmode = 'array',
                                             tickvals = df_binned_weight["weight (kg)"],
@@ -99,12 +103,12 @@ fig_binned_weigth=make_hlines(fig_binned_weigth)
 # MAKE WITH FAT BINNING
 df_binned_weight, xtick_bin = process_bins.process_bins(df,'fat mass')
 fig_binned_fat_weigth = px.scatter(df_binned_weight,x="fat mass",y=["systolic","diastolic"],template=template_plotly)
-fig_binned_fat_weigth.update_layout(xaxis_title="Average fat mass (kg) in bin",yaxis_title="Blood pressure (mmHG)")
+fig_binned_fat_weigth.update_layout(xaxis_title="Average fat mass (kg) in bin",yaxis_title="Blood pressure (mmHG)",font=font_dict)
 fig_binned_fat_weigth=make_hlines(fig_binned_fat_weigth)
 
 df_binned_weight, xtick_bin = process_bins.process_bins(df,'muscle mass')
 fig_binned_muscle_weigth = px.scatter(df_binned_weight,x="muscle mass",y=["systolic","diastolic"],template=template_plotly)
-fig_binned_muscle_weigth.update_layout(xaxis_title="Average muscle mass (kg) in bin",yaxis_title="Blood pressure (mmHG)")
+fig_binned_muscle_weigth.update_layout(xaxis_title="Average muscle mass (kg) in bin",yaxis_title="Blood pressure (mmHG)",font=font_dict)
 fig_binned_muscle_weigth=make_hlines(fig_binned_muscle_weigth)
 
 # TAB 3 - exercise
@@ -112,14 +116,14 @@ fig_binned_muscle_weigth=make_hlines(fig_binned_muscle_weigth)
 
 fig_avg_bp_exercise = px.scatter(df_avg_exercise,x="monthly average (h)",y=["avg monthly systolic","avg monthly diastolic"],
                                  template=template_plotly,color=df_avg_exercise.index.month,hover_data=[df_avg_exercise.index.strftime("%d/%m/%Y")])
-fig_avg_bp_exercise.update_layout(title="Color show month",xaxis_title="Monthly exerise (hours)",yaxis_title="Blood pressure (mmHG) average of that month")
+fig_avg_bp_exercise.update_layout(title="Colors show diff. months",xaxis_title="Monthly exerise (hours)",yaxis_title="BP (mmHG) average of that month",font=font_dict)
 fig_avg_bp_exercise=make_hlines(fig_avg_bp_exercise)
 
 
 
 fig_avg_bp_exercise_color_weight = px.scatter(df_avg_exercise,x="monthly average (h)",y=["avg monthly systolic","avg monthly diastolic"],
                                  template=template_plotly,color='avg monthly weight (kg)',hover_data=[df_avg_exercise.index.strftime("%d/%m/%Y")])
-fig_avg_bp_exercise_color_weight.update_layout(xaxis_title="Monthly exerise (hours)",yaxis_title="Blood pressure (mmHG) average of that month")
+fig_avg_bp_exercise_color_weight.update_layout(xaxis_title="Monthly exerise (hours)",yaxis_title="BP (mmHG) average of that month",font=font_dict)
 fig_avg_bp_exercise_color_weight=make_hlines(fig_avg_bp_exercise_color_weight)
 
 
@@ -142,11 +146,18 @@ app.layout = html.Div([
                                                 dbc.Col([
                                                     drawText("BP since last appointment"),
                                                         html.Br(),
-                                                        html.Div([
-                                                        html.H5("Measurements, taken since last appointment (spordically). "
-                                                                "Three measurements taken with 1 minute intervals before breakfast."
-                                                                " My BP machine could be unreliable taking 4-8 times to get a reading"),
-                                                        ],style={'textAlign': 'center'})
+
+                                                            dcc.Markdown('''
+                                                            ### Abstract
+                                                            - Measurements, taken since last appointment (sporadically)
+                                                            - Three measurements taken with 1 minute intervals before breakfast
+                                                            - My BP machine could be unreliable taking 4-8 times to get a reading
+                                                            - Hope to show with the following plots that my BP decreases with my total weight achieving approx. 120/80 at around 82-83kg
+                                                            - However BP rarely drops below 120/80 no what total weight
+                                                            - It is however difficult to maintain this weight. 
+                                                            - Stress levels have only been accounted for in the comments 
+                                                                ''')
+
 
                                                 ]),
 
@@ -254,6 +265,7 @@ app.layout = html.Div([
                                                 - FIRSTLY THIS IS ALL VERY HAND WAVEY! and based only on one sample
                                                 - Bin the weight data in approx. 1kg bin
                                                 - For that bin range, calculate the average systolic and diastolic pressure
+                                                - Note HR data aviable but not plotted
                                                 
                                                 ### Findings
                                                 - Systolic pressure gets close to 120 as weight decreases, but is it close enough? How accurate are the machines?
@@ -308,12 +320,12 @@ app.layout = html.Div([
                             ]),
                         ])
                     ]),
-                    dbc.Tab(label='Data table by date', children=[
+                    dbc.Tab(label='Data table ordered by date', children=[
                        # Note the dash table is much better but much fiddilier to use
                         dbc.Table.from_dataframe(df_date_strip, striped=True, bordered=True, hover=True)
 
                     ]),
-                    dbc.Tab(label='Data table weight', children=[
+                    dbc.Tab(label='Data table ordered by weight', children=[
                        # Note the dash table is much better but much fiddilier to use
                         dbc.Table.from_dataframe(df_date_strip.sort_values(by='weight (kg)'), striped=True, bordered=True, hover=True)
 
@@ -334,7 +346,7 @@ def figupdate(start_date, end_date):
 
     figure = px.scatter(filtered_df, x=filtered_df.index, y=["systolic","diastolic"],hover_data= ["weight (kg)","comments"],template=template_plotly)
     figure.update_layout({'xaxis':{'tickformat': '%d/%m/%y'}},title="BP over time",xaxis_title="date",yaxis_title="Blood pressure (mmHG)",
-                       hovermode="x unified")
+                       hovermode="x unified",font=font_dict)
     figure=make_hlines(figure)
 
     return figure
@@ -349,7 +361,7 @@ def update_bar_chart(slider_range):
     mask = (df['weight (kg)'] > low) & (df['weight (kg)'] < high)
 
     fig_weight = px.scatter(df[mask], x="weight (kg)", y=["systolic", "diastolic"], template=template_plotly)
-    fig_weight.update_layout(title="BP v. total weight", xaxis_title="weight (kg)", yaxis_title="Blood pressure (mmHG)")
+    fig_weight.update_layout(title="BP v. total weight", xaxis_title="weight (kg)", yaxis_title="Blood pressure (mmHG)",font=font_dict)
     fig_weight = make_hlines(fig_weight)
 
     return fig_weight
