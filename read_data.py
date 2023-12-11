@@ -1,5 +1,6 @@
 import pandas as pd
 import base64
+import os
 def create_onedrive_directdownload (onedrive_link):
     """
     Found here - https://towardsdatascience.com/how-to-get-onedrive-direct-download-link-ecb52a62fee4
@@ -23,8 +24,11 @@ def read_csv():
     """
 
     # Read blood pressure data
-    blood_pressure_path = 'https://1drv.ms/u/s!ArlllFGoorx2hINGANQzDmW1QHwn3g?e=t8zhWT'
-    bp_load_url = create_onedrive_directdownload(blood_pressure_path)
+    # TODO - set path to onedrive spreadsheet
+    try:
+        bp_load_url = create_onedrive_directdownload(blood_pressure_path)
+    except:
+        print('Error locating blood pressure data please check path to onedrive file')
     df = pd.read_csv(bp_load_url)
     # Rename columns
     df.rename(columns={"bp1": "systolic", "bp2": "diastolic"}, inplace=True)
