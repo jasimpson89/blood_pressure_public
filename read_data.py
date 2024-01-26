@@ -29,6 +29,8 @@ def read_csv():
         bp_load_url = create_onedrive_directdownload(blood_pressure_path)
     except:
         print('Error locating blood pressure data please check path to onedrive file')
+        print('Defaulting to local data in repo')
+        bp_load_url = './blood_pressure.csv'
     df = pd.read_csv(bp_load_url)
     # Rename columns
     df.rename(columns={"bp1": "systolic", "bp2": "diastolic"}, inplace=True)
@@ -40,7 +42,14 @@ def read_csv():
 
     # Read average exercise data
     average_exercise_path = 'https://1drv.ms/u/s!ArlllFGoorx2hINH2WLsOhWqqXLuMw?e=N7K2I4'
-    average_exercise_url = create_onedrive_directdownload(average_exercise_path)
+
+    try:
+        average_exercise_url = create_onedrive_directdownload(average_exercise_path)
+    except:
+        print('Error locating blood pressure data please check path to onedrive file')
+        print('Defaulting to local data in repo')
+        average_exercise_url = './average_exercise.csv'
+    
     df_avg_exercise = pd.read_csv(average_exercise_url, sep=",")
     df_avg_exercise['date'] = pd.to_datetime(df_avg_exercise['date'], format='%d/%m/%Y')
     df_avg_exercise.set_index('date', inplace=True)

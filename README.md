@@ -19,5 +19,8 @@ Within the repo there is a file called blood_pressure.csv. This has some test da
 
 2. ## Via onedrive - the recommended way
 
-I created this method because I wanted my dashboard to run on the server without any intervention from myself, and I wanted the input data on my phone when I measured my blood pressure in the morning. I used an excel spreadsheet (in CSV format), which is saved on my onedrive. Within this app I download the CSV file which is then read by Pandas. Full documentation of this method is given [here](https://towardsdatascience.com/onedrive-as-data-storage-for-python-project-2ff8d2d3a0aa). Note that this method does rely on you making the CSV file in your onedrive "public" via creating a URL that in theory someone could guess, this introduces a security issue you may want to consider.
+I created this method because I wanted my dashboard to run on the server without any intervention from myself, and I wanted the data to be input on my phone when I measured my blood pressure in the morning. I used an excel spreadsheet (in CSV format), which is saved on my onedrive. Within this app I download the CSV file which is then read by Pandas. Full documentation of this method is given [here](https://towardsdatascience.com/onedrive-as-data-storage-for-python-project-2ff8d2d3a0aa). Note that this method does rely on you making the CSV file in your onedrive "public" via creating a URL that in theory someone could guess, this introduces a security issue you may want to consider.
 
+## Average exercise
+
+Note there is another CSV in this repo which contains the average of your exercise for the month. The date column should always start with the first of the month in question and the other variables should retain the same format. Data in this CSV is not critical for the functioning of the dashboard but provides extra data analysis if you would like to see how your weight / blood pressure correlates with exercise. 
